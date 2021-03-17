@@ -40,8 +40,22 @@ export const constantRouterMap = [
         path: 'dashboard',
         component: (resolve) => require(['@/views/home'], resolve),
         name: 'Dashboard',
-        meta: { title: '个人中心', icon: 'index', affix: true, noCache: true }
-      }
+        meta: { title: '个人中心', icon: 'index', affix: true }
+      },
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: '/labTaskEdit',
+        component: (resolve) => require(['@/views/mylab/labTaskEdit'], resolve),
+        name: '编辑实验报告',
+        meta: { title: '编辑实验报告' }
+      },
     ]
   },
   {

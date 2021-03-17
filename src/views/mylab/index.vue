@@ -7,7 +7,7 @@
         <el-tab-pane>
           <span slot="label"><i class="el-icon-document-delete"></i> 待完成</span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+          <el-table ref="table" v-loading="crud.loading" :data="[{taskDesc: '1',id: '1'},{taskDesc: '2',id: '2'}]" size="small" style="width: 100%;">
             <el-table-column prop="taskDesc" label="课程解答描述" />
             <el-table-column prop="taskGrade" label="课程得分" />
             <el-table-column prop="teacherDesc" label="老师评语" />
@@ -17,12 +17,13 @@
             <el-table-column prop="teacherTime" label="批改时间" />
             <el-table-column prop="laboratoryId" label="实验室Id" />
             <el-table-column prop="taskStatus" label="状态" />
-            <el-table-column v-if="checkPer(['admin','report:edit','report:del'])" label="操作" width="150px" align="center">
+            <el-table-column label="操作" width="150px" align="center">
               <template slot-scope="scope">
                 <udOperation
                   :data="scope.row"
                   :permission="permission"
                 />
+                <el-button type="primary" @click="editReport(scope.row.id)">开始</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -32,7 +33,7 @@
         <el-tab-pane>
           <span slot="label"><i class="el-icon-document-checked"></i> 已完成</span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+          <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;">
             <el-table-column prop="taskDesc" label="课程解答描述" />
             <el-table-column prop="taskGrade" label="课程得分" />
             <el-table-column prop="teacherDesc" label="老师评语" />
@@ -42,7 +43,7 @@
             <el-table-column prop="teacherTime" label="批改时间" />
             <el-table-column prop="laboratoryId" label="实验室Id" />
             <el-table-column prop="taskStatus" label="状态" />
-            <el-table-column v-if="checkPer(['admin','report:edit','report:del'])" label="操作" width="150px" align="center">
+            <el-table-column label="操作" width="150px" align="center">
               <template slot-scope="scope">
                 <udOperation
                   :data="scope.row"
@@ -86,6 +87,14 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
+    },
+    editReport(id) {
+      this.$router.push({
+        path: '/labTaskEdit',
+        query: {
+          reportId: id
+        }
+      })
     }
   }
 }

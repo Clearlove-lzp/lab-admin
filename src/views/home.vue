@@ -4,7 +4,7 @@
 
       <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
-      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <!-- <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
         <line-chart :chart-data="lineChartData" />
       </el-row>
       <el-row :gutter="32">
@@ -23,7 +23,7 @@
             <bar-chart />
           </div>
         </el-col>
-      </el-row>
+      </el-row> -->
     </div>
   </div>
 </template>
@@ -78,7 +78,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .dashboard-editor-container {
-    background-color: rgb(240, 242, 245);
+    // background-color: rgb(240, 242, 245);
     position: relative;
 
     .github-corner {

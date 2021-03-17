@@ -23,30 +23,12 @@
       <!--表单组件-->
       <el-dialog :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="500px">
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
-          <!-- <el-form-item label="id">
-            <el-input v-model="form.id" style="width: 370px;" />
-          </el-form-item> -->
           <el-form-item label="课题名称" prop="taskName">
             <el-input v-model="form.taskName" style="width: 370px;" />
           </el-form-item>
           <el-form-item label="描述" prop="taskDesc">
             <el-input v-model="form.taskDesc" :rows="3" type="textarea" style="width: 370px;" />
           </el-form-item>
-          <!-- <el-form-item label="课题编号">
-            <el-input v-model="form.taskCode" style="width: 370px;" />
-          </el-form-item> -->
-          <!-- <el-form-item label="创建时间">
-            <el-input v-model="form.createTime" style="width: 370px;" />
-          </el-form-item>
-          <el-form-item label="创建人">
-            <el-input v-model="form.createBy" style="width: 370px;" />
-          </el-form-item> -->
-          <!-- <el-form-item label="修改时间">
-            <el-input v-model="form.updateTime" style="width: 370px;" />
-          </el-form-item> -->
-          <!-- <el-form-item label="修改人">
-            <el-input v-model="form.updateBy" style="width: 370px;" />
-          </el-form-item> -->
           <el-form-item label="状态" prop="taskStatus">
             <el-radio v-model="form.taskStatus" v-for="item in dict.task_status" :key="item.id" :label="item.value">{{ item.label }}</el-radio>
           </el-form-item>
@@ -62,9 +44,7 @@
       <!--表格渲染-->
       <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
         <el-table-column type="selection" width="55" />
-        <!-- <el-table-column prop="id" label="id" /> -->
         <el-table-column prop="taskName" label="课题名称" />
-        <!-- <el-table-column prop="taskCode" label="课题编号" /> -->
         <el-table-column prop="taskDesc" :show-overflow-tooltip="true" label="描述" />
         <el-table-column prop="taskTeacher" label="负责老师" width="100px" />
         <el-table-column prop="taskStatus" label="状态" width="100px" >
@@ -74,8 +54,6 @@
         </el-table-column>
         <el-table-column prop="createBy" label="创建人" width="100px"/>
         <el-table-column prop="createTime" label="创建时间" />
-        <!-- <el-table-column prop="updateTime" label="修改时间" />
-        <el-table-column prop="updateBy" label="修改人" /> -->
         <el-table-column v-if="checkPer(['admin','task:edit','task:del'])" label="操作" width="180px" align="center">
           <template slot-scope="scope">
             <udOperation
@@ -83,12 +61,27 @@
               :permission="permission"
               style="display: inline-block"
             />
-            <el-button type="primary">派发</el-button>
+            <el-button type="primary" @click="showHandoutModalFunc(scope.row.id)">派发</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!--分页组件-->
       <pagination />
+      <!--表单组件-->
+      <el-dialog :close-on-click-modal="false" :before-close="reset" :visible.sync="handoutDialog" title="派发课题" width="500px">
+        <el-form ref="handleForm" :model="handleForm" :rules="handleRules" size="small" label-width="80px">
+          <el-form-item label="实验室" prop="room">
+            <el-input v-model="handleForm.room" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="派发学生" prop="student">
+            <el-input v-model="handleForm.student" :rows="3" type="textarea" style="width: 370px;" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="text" @click="reset">取消</el-button>
+          <el-button :loading="crud.status.cu === 2" type="primary" @click="handleoutSubmit">确认</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -135,7 +128,20 @@ export default {
       queryTypeOptions: [
         { key: 'taskName', display_name: '课题名称' },
         { key: 'taskStatus', display_name: '课程状态 0：启用 1：禁用' }
-      ]
+      ],
+      handoutDialog: false,
+      handleForm: {
+        room: "",
+        student: ""
+      },
+      handleRules: {
+        room: [
+          {required: true,  message: '实验室不能为空', trigger: 'change'}
+        ],
+        student: [
+          {required: true,  message: '学生不能为空', trigger: 'change'}
+        ]
+      }
     }
   },
   computed: {
@@ -147,6 +153,26 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
+    },
+    // 关闭派发窗口
+    reset() {
+      this.handoutDialog = false;
+      this.$refs.handleForm.resetFields();
+    },
+    // 打开派发窗口
+    showHandoutModalFunc(id) {
+      this.handoutDialog = true;
+    },
+    // 派发
+    handleoutSubmit() {
+      this.$refs.handleForm.validate((valid) => {
+        if (valid) {
+          alert('submit!');
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     }
   },
   mounted() {
