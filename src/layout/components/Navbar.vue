@@ -6,19 +6,19 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
+        <!-- <search id="header-search" class="right-menu-item" /> -->
 
-        <el-tooltip content="项目文档" effect="dark" placement="bottom">
+        <!-- <el-tooltip content="项目文档" effect="dark" placement="bottom">
           <Doc class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
         <el-tooltip content="全屏缩放" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="布局设置" effect="dark" placement="bottom">
+        <!-- <el-tooltip content="布局设置" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
       </template>
 
@@ -28,16 +28,16 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <span style="display:block;" @click="show = true">
+          <!-- <span style="display:block;" @click="show = true">
             <el-dropdown-item>
               布局设置
             </el-dropdown-item>
-          </span>
-          <router-link to="/user/center">
+          </span> -->
+          <!-- <router-link to="/user/center">
             <el-dropdown-item>
               个人中心
             </el-dropdown-item>
-          </router-link>
+          </router-link> -->
           <span style="display:block;" @click="open">
             <el-dropdown-item divided>
               退出登录
