@@ -56,6 +56,12 @@ export const constantRouterMap = [
         name: '编辑实验报告',
         meta: { title: '编辑实验报告' }
       },
+      {
+        path: '/labTaskDetail',
+        component: (resolve) => require(['@/views/mylab/labTaskDetail'], resolve),
+        name: '实验报告详情',
+        meta: { title: '实验报告详情' }
+      },
     ]
   },
   {

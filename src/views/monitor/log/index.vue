@@ -10,8 +10,7 @@
           icon="el-icon-delete"
           size="mini"
           :loading="crud.delAllLoading"
-          @click="confirmDelAll()"
-        >
+          @click="confirmDelAll()">
           清空
         </el-button>
       </crudOperation>
