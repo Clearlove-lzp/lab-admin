@@ -24,4 +24,20 @@ export function edit(data) {
   })
 }
 
+export function getReport(data) {
+  return request({
+    url: 'api/report',
+    method: 'get',
+    params: data
+  })
+}
+
+export function issueTask(data) {
+  return request({
+    url: '/api/report/issueTask',
+    method: 'post',
+    data
+  })
+}
+
 export default { add, edit, del }

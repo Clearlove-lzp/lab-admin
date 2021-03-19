@@ -62,6 +62,12 @@ export const constantRouterMap = [
         name: '实验报告详情',
         meta: { title: '实验报告详情' }
       },
+      {
+        path: '/labCorrent',
+        component: (resolve) => require(['@/views/reportManager/labCorrent'], resolve),
+        name: '批改实验报告',
+        meta: { title: '批改实验报告' }
+      },
     ]
   },
   {
@@ -81,8 +87,8 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'hash',
-  mode: 'history',
+  mode: 'hash',
+  // mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })

@@ -45,6 +45,14 @@ export function updatePass(user) {
   })
 }
 
+export function getUsersByRole(data) {
+  return request({
+    url: '/api/users/getUsersByRole',
+    method: 'get',
+    params: data
+  })
+}
+
 export function updateEmail(form) {
   const data = {
     password: encrypt(form.pass),

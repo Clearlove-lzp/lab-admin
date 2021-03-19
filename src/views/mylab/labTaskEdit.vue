@@ -26,6 +26,7 @@
 import { mapGetters } from 'vuex'
 import { upload } from '@/utils/upload'
 import E from 'wangeditor'
+import { edit } from '@/api/report'
 
 export default {
   props: {},

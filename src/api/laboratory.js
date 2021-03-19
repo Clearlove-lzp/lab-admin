@@ -24,4 +24,12 @@ export function edit(data) {
   })
 }
 
-export default { add, edit, del }
+export function getLab(data) {
+  return request({
+    url: 'api/laboratory',
+    method: 'get',
+    params: data
+  })
+}
+
+export default { add, edit, del, getLab }

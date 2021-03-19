@@ -71,9 +71,24 @@
       <el-dialog :close-on-click-modal="false" :before-close="reset" :visible.sync="handoutDialog" title="派发课题" width="500px">
         <el-form ref="handleForm" :model="handleForm" :rules="handleRules" size="small" label-width="80px">
           <el-form-item label="实验室" prop="room">
-            <el-input v-model="handleForm.room" style="width: 370px;" />
+            <el-select v-model="handleForm.room" style="width: 370px;">
+              <el-option
+                v-for="item in labList"
+                :key="item.id"
+                :label="item.lName"
+                :value="item.lName">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="派发学生" prop="student">
+            <el-select v-model="handleForm.student" multiple style="width: 370px;">
+              <el-option
+                v-for="item in studentList"
+                :key="item.id"
+                :label="item.lName"
+                :value="item.lName">
+              </el-option>
+            </el-select>
             <el-input v-model="handleForm.student" :rows="3" type="textarea" style="width: 370px;" />
           </el-form-item>
         </el-form>
@@ -94,6 +109,9 @@ import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { mapState } from 'vuex'
+import { getLab } from '@/api/laboratory'
+import { getUsersByRole } from '@/api/system/user'
+import { issueTask } from '@/api/report'
 
 const defaultForm = { id: null, taskName: null, taskCode: null, createTime: new Date(), createBy: null, updateTime: null, updateBy: null, taskStatus: '0', taskTeacher: null, taskDesc: null }
 export default {
@@ -132,16 +150,18 @@ export default {
       handoutDialog: false,
       handleForm: {
         room: "",
-        student: ""
+        student: []
       },
       handleRules: {
         room: [
           {required: true,  message: '实验室不能为空', trigger: 'change'}
         ],
         student: [
-          {required: true,  message: '学生不能为空', trigger: 'change'}
+          {required: true, type: 'array',  message: '学生不能为空', trigger: 'change'}
         ]
-      }
+      },
+      labList: [],
+      studentList: []
     }
   },
   computed: {
@@ -168,15 +188,40 @@ export default {
       this.$refs.handleForm.validate((valid) => {
         if (valid) {
           alert('submit!');
+          // issueTask
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+    },
+    getLab() {
+      let params = {
+        page: 0,
+        size: 100,
+        sort: 'id,lDesc'
+      }
+      getLab(params).then(res => {
+        if(res.content) {
+          this.labList = res.content;
+        }
+      })
+    },
+    getStudent() {
+      let params = {
+        roleId: 2
+      }
+      getUsersByRole(params).then(res => {
+        if(res.content) {
+          this.studentList = res.content;
+        }
+      })
     }
   },
   mounted() {
     defaultForm.createBy = this.userInfo.user.username;
+    this.getLab()
+    this.getStudent()
   }
 }
 </script>

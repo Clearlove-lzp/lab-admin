@@ -5,9 +5,12 @@
     <div class="head-container">
       <el-tabs type="border-card">
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-document-delete"></i> 待批改</span>
+          <span slot="label">
+            <i class="el-icon-document-delete"></i> 待批改
+            <el-badge :value="2" class="item" />
+          </span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+          <el-table ref="table" v-loading="crud.loading" :data="[{id: '1', taskDesc: 'A'}, {id: '2', taskDesc: 'B'}]" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
             <el-table-column prop="taskDesc" label="课程解答描述" />
             <el-table-column prop="taskGrade" label="课程得分" />
             <el-table-column prop="teacherDesc" label="老师评语" />
@@ -23,6 +26,7 @@
                   :data="scope.row"
                   :permission="permission"
                 />
+                <el-button type="primary" @click="correntReport(scope.row.id)">批改</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -86,6 +90,14 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
+    },
+    correntReport(id) {
+      this.$router.push({
+        path: '/labCorrent',
+        query: {
+          reportId: id
+        }
+      })
     }
   }
 }

@@ -5,7 +5,10 @@
     <div class="head-container">
       <el-tabs type="border-card">
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-document-delete"></i> 待完成</span>
+          <span slot="label">
+            <i class="el-icon-document-delete"></i> 待完成
+            <el-badge :value="2" class="item" />
+          </span>
           <!--表格渲染-->
           <el-table ref="table" v-loading="crud.loading" :data="[{taskDesc: '1',id: '1'},{taskDesc: '2',id: '2'}]" size="small" style="width: 100%;">
             <el-table-column prop="taskDesc" label="课程解答描述" />
@@ -21,8 +24,7 @@
               <template slot-scope="scope">
                 <udOperation
                   :data="scope.row"
-                  :permission="permission"
-                />
+                  :permission="permission"/>
                 <el-button type="primary" @click="editReport(scope.row.id)">开始</el-button>
               </template>
             </el-table-column>
@@ -31,9 +33,11 @@
           <pagination />
         </el-tab-pane>
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-document-checked"></i> 已完成</span>
+          <span slot="label">
+            <i class="el-icon-document-checked"></i> 已完成
+          </span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="[{taskDesc: '1',id: '1'},{taskDesc: '2',id: '2'}]" size="small" style="width: 100%;">
+          <el-table ref="table" v-loading="crud.loading" :data="[{taskDesc: '1',id: '1'}]" size="small" style="width: 100%;">
             <el-table-column prop="taskDesc" label="课程解答描述" />
             <el-table-column prop="taskGrade" label="课程得分" />
             <el-table-column prop="teacherDesc" label="老师评语" />
