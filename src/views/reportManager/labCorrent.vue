@@ -5,8 +5,8 @@
       <el-row :gutter="10">
         <el-col :span="8">
           <div class="grid-content-border flex-item">
-            <p class="lab-title">标题</p>
-            <p>内容</p>
+            <p class="lab-title">{{reportInfo.taskName}}</p>
+            <p>{{reportInfo.tDesc}}</p>
           </div>
           <div class="grid-content-border flex-item">
             <el-form :model="formItem" :rules="rulesItem" ref="ruleForm" label-width="70px" class="demo-ruleForm">
@@ -18,13 +18,13 @@
               </el-form-item>
             </el-form>
             <div class="editSubmit">
-              <el-button type="primary" @click="submit">提交</el-button>
+              <el-button type="primary" @click="submit" :loading="loading">提交</el-button>
             </div>
           </div>
         </el-col>
         <el-col :span="16">
-          <div class="grid-content grid-right grid-content-border">
-            学生填写的报告
+          <div class="grid-content grid-right grid-content-border" v-html="reportInfo.taskDesc">
+            
           </div>
         </el-col>
       </el-row>
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import { edit } from '@/api/report'
+import { getReport, edit } from '@/api/report'
+import moment from 'moment';
 
 export default {
   props: {},
@@ -50,7 +51,9 @@ export default {
         desc: [
           {required: true, message: '评语不能为空', trigger: 'blur'}
         ],
-      }
+      },
+      reportInfo: {},
+      loading: false
     };
   },
   components: {},
@@ -60,16 +63,43 @@ export default {
     submit() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          alert('submit!');
+          let params = {
+            id: this.$route.query.reportId,
+            taskGrade: this.formItem.score,
+            teacherDesc: this.formItem.desc,
+            taskStatus: 3,
+            teacherTime: moment().format('YYYY-MM-DD HH:mm:ss')
+          }
+          this.loading = true;
+          edit(params).then(res => {
+            this.loading = false;
+            this.$router.push({
+              path: '/reportManager/index'
+            })
+            this.$message.success('批改成功')
+          })
         } else {
           console.log('error submit!!');
           return false;
+        }
+      })
+    },
+    getReportById() {
+      let params = {
+        id: this.$route.query.reportId
+      }
+      getReport(params).then(res => {
+        if(res.content && res.content.length) {
+          this.reportInfo = res.content[0]
+        }else{
+          this.reportInfo = {}
         }
       })
     }
   },
   watch: {},
   mounted() {
+    this.getReportById()
   },
   created() {},
 }

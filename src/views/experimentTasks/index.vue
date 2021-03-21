@@ -42,7 +42,7 @@
         </div>
       </el-dialog>
       <!--表格渲染-->
-      <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+      <el-table ref="table" v-loading="crud.loading" :data="crud.data.data.content" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="taskName" label="课题名称" />
         <el-table-column prop="taskDesc" :show-overflow-tooltip="true" label="描述" />
@@ -61,7 +61,7 @@
               :permission="permission"
               style="display: inline-block"
             />
-            <el-button type="primary" @click="showHandoutModalFunc(scope.row.id)">派发</el-button>
+            <el-button type="primary" @click="showHandoutModalFunc(scope.row)">派发</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,25 +76,25 @@
                 v-for="item in labList"
                 :key="item.id"
                 :label="item.lName"
-                :value="item.lName">
+                :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="派发学生" prop="student">
             <el-select v-model="handleForm.student" multiple style="width: 370px;">
               <el-option
-                v-for="item in studentList"
-                :key="item.id"
-                :label="item.lName"
-                :value="item.lName">
+                v-for="item in crud.data.stu_users"
+                :key="item.user_id"
+                :label="item.username"
+                :value="item.user_id">
               </el-option>
             </el-select>
-            <el-input v-model="handleForm.student" :rows="3" type="textarea" style="width: 370px;" />
+            <!-- <el-input v-model="handleForm.student" :rows="3" type="textarea" style="width: 370px;" /> -->
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="text" @click="reset">取消</el-button>
-          <el-button :loading="crud.status.cu === 2" type="primary" @click="handleoutSubmit">确认</el-button>
+          <el-button :loading="handleoutLoading" type="primary" @click="handleoutSubmit">确认</el-button>
         </div>
       </el-dialog>
     </div>
@@ -161,7 +161,9 @@ export default {
         ]
       },
       labList: [],
-      studentList: []
+      studentList: [],
+      handleInfo: {},
+      handleoutLoading: false
     }
   },
   computed: {
@@ -172,6 +174,7 @@ export default {
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
+      this.crud.query.createBy = this.userInfo.user.username;
       return true
     },
     // 关闭派发窗口
@@ -180,15 +183,39 @@ export default {
       this.$refs.handleForm.resetFields();
     },
     // 打开派发窗口
-    showHandoutModalFunc(id) {
+    showHandoutModalFunc(info) {
+      this.handleInfo = info
       this.handoutDialog = true;
     },
     // 派发
     handleoutSubmit() {
       this.$refs.handleForm.validate((valid) => {
         if (valid) {
-          alert('submit!');
-          // issueTask
+          let params = {
+            lid: this.handleForm.room,
+            taskId: this.handleInfo.id,
+            taskName: this.handleInfo.taskName,
+            tdesc: this.handleInfo.taskDesc,
+            teacher: this.userInfo.user.username
+          }
+          let users = [];
+          this.handleForm.student.map(x => {
+            this.crud.data.stu_users.map(y => {
+              if(x === y.user_id) {
+                users.push(y)
+              }
+            })
+          })
+          params.users = users;
+          this.handleoutLoading = true;
+          issueTask(params).then(res => {
+            this.handleoutLoading = false;
+            this.reset()
+            this.$message({
+              message: '派发成功',
+              type: 'success'
+            })
+          })
         } else {
           console.log('error submit!!');
           return false;
@@ -199,11 +226,13 @@ export default {
       let params = {
         page: 0,
         size: 100,
-        sort: 'id,lDesc'
+        sort: 'id,desc'
       }
       getLab(params).then(res => {
         if(res.content) {
-          this.labList = res.content;
+          this.labList = res.content.filter(x => {
+            return x.lStatus === '1'
+          })
         }
       })
     },
@@ -221,7 +250,7 @@ export default {
   mounted() {
     defaultForm.createBy = this.userInfo.user.username;
     this.getLab()
-    this.getStudent()
+    // this.getStudent()
   }
 }
 </script>

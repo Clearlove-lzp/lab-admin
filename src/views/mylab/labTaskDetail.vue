@@ -5,18 +5,17 @@
       <el-row :gutter="10">
         <el-col :span="8">
           <div class="grid-content-border flex-item">
-            <p class="lab-title">标题</p>
-            <p>内容</p>
+            <p class="lab-title">{{reportInfo.taskName}}</p>
+            <p>{{reportInfo.tDesc}}</p>
           </div>
           <div class="grid-content-border flex-item">
-            <p>得分：90</p>
+            <p>得分：{{reportInfo.taskGrade}}</p>
             <p>评语：</p>
-            <p>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</p>
+            <p>{{reportInfo.teacherDesc}}</p>
           </div>
         </el-col>
         <el-col :span="16">
-          <div class="grid-content grid-right grid-content-border">
-            11
+          <div class="grid-content grid-right grid-content-border" v-html="reportInfo.taskDesc">
           </div>
         </el-col>
       </el-row>
@@ -25,19 +24,34 @@
 </template>
 
 <script>
-
+import { getReport } from '@/api/report'
 export default {
   props: {},
   data () {
     return {
+      reportInfo: {}
     };
   },
   components: {},
   computed: {
   },
-  methods: {},
+  methods: {
+    getReportById() {
+      let params = {
+        id: this.$route.query.reportId
+      }
+      getReport(params).then(res => {
+        if(res.content && res.content.length) {
+          this.reportInfo = res.content[0]
+        }else{
+          this.reportInfo = {}
+        }
+      })
+    }
+  },
   watch: {},
   mounted() {
+    this.getReportById()
   },
   created() {},
 }

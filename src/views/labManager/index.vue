@@ -44,7 +44,7 @@
         <el-table-column prop="createTime" label="创建时间"  width="145" />
         <el-table-column prop="createUser" label="创建人" />
         <!-- <el-table-column prop="teacher" label="使用教师" /> -->
-        <el-table-column v-if="checkPer(['admin','laboratory:edit','laboratory:del'])" label="操作" width="150px" align="center">
+        <el-table-column label="操作" width="150px" align="center">
           <template slot-scope="scope">
             <udOperation
               :data="scope.row"

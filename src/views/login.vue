@@ -56,8 +56,8 @@ export default {
       codeUrl: '',
       cookiePass: '',
       loginForm: {
-        username: 'admin',
-        password: '123456',
+        username: '',
+        password: '',
         rememberMe: false,
         code: '',
         uuid: ''
@@ -140,7 +140,7 @@ export default {
           }
           this.$store.dispatch('Login', user).then(() => {
             this.loading = false
-            this.$router.push({ path: this.redirect || '/' })
+            this.$router.push({ path: '/dashboard' })
           }).catch(() => {
             this.loading = false
             this.getCode()

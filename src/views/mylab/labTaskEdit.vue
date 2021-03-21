@@ -5,15 +5,15 @@
       <el-row :gutter="5">
         <el-col :span="6">
           <div class="grid-content">
-            <p class="lab-title">标题</p>
-            <p>内容</p>
+            <p class="lab-title">{{reportInfo.taskName}}</p>
+            <p>{{reportInfo.tDesc}}</p>
           </div>
         </el-col>
         <el-col :span="18">
           <div class="grid-content grid-right">
             <div ref="editor" class="text" />
             <div class="editSubmit">
-              <el-button type="primary">提交</el-button>
+              <el-button type="primary" :loading="loading" @click="submit">提交</el-button>
             </div>
           </div>
         </el-col>
@@ -26,13 +26,16 @@
 import { mapGetters } from 'vuex'
 import { upload } from '@/utils/upload'
 import E from 'wangeditor'
-import { edit } from '@/api/report'
+import { edit, getReport } from '@/api/report'
+import moment from 'moment';
 
 export default {
   props: {},
   data () {
     return {
-      editorContent: ""
+      editorContent: "",
+      reportInfo: {},
+      loading: false,
     };
   },
   components: {},
@@ -42,7 +45,39 @@ export default {
       'baseApi'
     ])
   },
-  methods: {},
+  methods: {
+    getReportById() {
+      let params = {
+        id: this.$route.query.reportId
+      }
+      getReport(params).then(res => {
+        if(res.content && res.content.length) {
+          this.reportInfo = res.content[0]
+        }else{
+          this.reportInfo = {}
+        }
+      })
+    },
+    submit() {
+      if(!this.editorContent || !this.editorContent.trim()) {
+        return this.$message.error("请填写报告")
+      }
+      let params = {
+        id: this.$route.query.reportId,
+        taskDesc: this.editorContent,
+        taskStatus: '2',
+        okTime: moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      this.loading = true;
+      edit(params).then(res => {
+        this.loading = false;
+        this.$router.push({
+          path: '/mylab/index'
+        })
+        this.$message.success('提交成功')
+      })
+    }
+  },
   watch: {},
   mounted() {
     const _this = this
@@ -67,6 +102,8 @@ export default {
     editor.create()
     // 初始化数据
     editor.txt.html(this.editorContent)
+
+    this.getReportById()
   },
   created() {},
 }

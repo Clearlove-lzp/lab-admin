@@ -7,25 +7,25 @@
         <el-tab-pane>
           <span slot="label">
             <i class="el-icon-document-delete"></i> 待批改
-            <el-badge :value="2" class="item" />
+            <el-badge :value="willData.length" class="item" />
           </span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="[{id: '1', taskDesc: 'A'}, {id: '2', taskDesc: 'B'}]" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
-            <el-table-column prop="taskDesc" label="课程解答描述" />
-            <el-table-column prop="taskGrade" label="课程得分" />
-            <el-table-column prop="teacherDesc" label="老师评语" />
-            <el-table-column prop="taskTeacher" label="批改教师" />
-            <el-table-column prop="createTime" label="开始时间" />
+          <el-table ref="table" v-loading="crud.loading" :data="willData" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+            <el-table-column prop="taskName" label="课题名称" />
+            <el-table-column prop="tDesc" :show-overflow-tooltip="true"  label="课题描述" />
             <el-table-column prop="okTime" label="完成时间" />
-            <el-table-column prop="teacherTime" label="批改时间" />
-            <el-table-column prop="laboratoryId" label="实验室Id" />
-            <el-table-column prop="taskStatus" label="状态" />
-            <el-table-column v-if="checkPer(['admin','report:edit','report:del'])" label="操作" width="150px" align="center">
+            <el-table-column prop="teacherTime" label="状态">
               <template slot-scope="scope">
-                <udOperation
+                <span class="dot" :class="{'yellow': scope.row.taskStatus === '2', 'green': scope.row.taskStatus === '3'}"></span>
+                <span>{{scope.row.taskStatus === '2' ? '待批阅' : '已批阅'}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150px" align="center">
+              <template slot-scope="scope">
+                <!-- <udOperation
                   :data="scope.row"
                   :permission="permission"
-                />
+                /> -->
                 <el-button type="primary" @click="correntReport(scope.row.id)">批改</el-button>
               </template>
             </el-table-column>
@@ -34,24 +34,32 @@
           <pagination />
         </el-tab-pane>
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-document-checked"></i> 已批改</span>
+          <span slot="label">
+            <i class="el-icon-document-checked"></i> 已批改
+            <el-badge :value="hasData.length" class="item" />
+          </span>
           <!--表格渲染-->
-          <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
-            <el-table-column prop="taskDesc" label="课程解答描述" />
-            <el-table-column prop="taskGrade" label="课程得分" />
-            <el-table-column prop="teacherDesc" label="老师评语" />
-            <el-table-column prop="taskTeacher" label="批改教师" />
-            <el-table-column prop="createTime" label="开始时间" />
+          <el-table ref="table" v-loading="crud.loading" :data="hasData" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+            <el-table-column prop="taskName" label="课题名称" />
+            <el-table-column prop="tDesc" :show-overflow-tooltip="true"  label="课题描述" />
+            <el-table-column prop="taskTeacher" label="负责老师" />
+            <el-table-column prop="taskGrade" label="得分" />
+            <el-table-column prop="teacherDesc" label="评语" />
             <el-table-column prop="okTime" label="完成时间" />
             <el-table-column prop="teacherTime" label="批改时间" />
-            <el-table-column prop="laboratoryId" label="实验室Id" />
-            <el-table-column prop="taskStatus" label="状态" />
-            <el-table-column v-if="checkPer(['admin','report:edit','report:del'])" label="操作" width="150px" align="center">
+            <el-table-column prop="taskStatus" label="状态">
               <template slot-scope="scope">
-                <udOperation
+                <span class="dot" :class="{'yellow': scope.row.taskStatus === '2', 'green': scope.row.taskStatus === '3'}"></span>
+                <span>{{scope.row.taskStatus === '2' ? '待批阅' : '已批阅'}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150px" align="center">
+              <template slot-scope="scope">
+                <!-- <udOperation
                   :data="scope.row"
                   :permission="permission"
-                />
+                /> -->
+                <el-button type="primary" @click="detailReport(scope.row.id)">详情</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -69,6 +77,7 @@ import CRUD, { presenter, header, crud } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Mylab',
@@ -89,6 +98,7 @@ export default {
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
+      this.crud.query.taskTeacher = this.userInfo.user.username
       return true
     },
     correntReport(id) {
@@ -98,11 +108,59 @@ export default {
           reportId: id
         }
       })
+    },
+    detailReport(id) {
+      this.$router.push({
+        path: '/labTaskDetail',
+        query: {
+          reportId: id
+        }
+      })
     }
+  },
+  computed: {
+    willData() {
+      let arr = [];
+      if(this.crud.data && this.crud.data instanceof Array) {
+        arr = this.crud.data
+      }
+      arr = arr.filter(x => {
+        return x.taskStatus === '2'
+      })
+      return arr
+    },
+    hasData() {
+      let arr = [];
+      if(this.crud.data && this.crud.data instanceof Array) {
+        arr = this.crud.data
+      }
+      arr = arr.filter(x => {
+        return x.taskStatus === '3'
+      })
+      return arr
+    },
+    ...mapState({
+      userInfo: state => state.user
+    }),
   }
 }
 </script>
 
 <style scoped>
-
+.dot{
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+.red{
+  background-color: red;
+}
+.yellow{
+  background-color: yellow;
+}
+.green{
+  background-color: green;
+}
 </style>
