@@ -24,4 +24,12 @@ export function edit(data) {
   })
 }
 
+export function taskStatistics(data) {
+  return request({
+    url: 'api/task/statistics',
+    method: 'get',
+    params: data
+  })
+}
+
 export default { add, edit, del }

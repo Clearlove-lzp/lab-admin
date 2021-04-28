@@ -11,7 +11,7 @@
           <div class="grid-content-border flex-item">
             <el-form :model="formItem" :rules="rulesItem" ref="ruleForm" label-width="70px" class="demo-ruleForm">
               <el-form-item label="评分" prop="score">
-                <el-input v-model="formItem.score"></el-input>
+                <el-input v-model.number="formItem.score"></el-input>
               </el-form-item>
               <el-form-item label="评语" prop="desc">
                 <el-input type="textarea" v-model="formItem.desc" :rows="6"></el-input>

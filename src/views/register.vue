@@ -2,7 +2,7 @@
   <div class="login" :style="'background-image:url('+ Background +');'">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left" label-width="0px" class="login-form">
       <h3 class="title">
-        实验教学管理系统
+        注册
       </h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
@@ -14,26 +14,20 @@
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code">
-        <el-input v-model="loginForm.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleLogin">
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+      <el-form-item prop="repassword">
+        <el-input v-model="loginForm.repassword" type="password" auto-complete="off" placeholder="确认密码" @keyup.enter.native="handleLogin">
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
-        <div class="login-code">
-          <img :src="codeUrl" @click="getCode">
-        </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">
-        记住我
-      </el-checkbox>
       <el-form-item style="width:100%;">
-        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleRegister">
+          <span v-if="!loading">注 册</span>
+          <span v-else>注 册 中...</span>
         </el-button>
       </el-form-item>
-      <!-- <el-form-item style="width:100%;">
-        <el-button size="medium" type="warning" style="width:100%;" @click.native.prevent="handleRegister">去注册</el-button>
-      </el-form-item> -->
+      <el-form-item style="width:100%;">
+        <el-button size="medium" type="warning" style="width:100%;" @click.native.prevent="handleLogin">去登录</el-button>
+      </el-form-item>
     </el-form>
     <!--  底部  -->
     <!-- <div v-if="$store.state.settings.showFooter" id="el-login-footer">
@@ -52,8 +46,17 @@ import Cookies from 'js-cookie'
 import qs from 'qs'
 import Background from '@/assets/images/background.jpg'
 export default {
-  name: 'Login',
+  name: 'Register',
   data() {
+    let validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.dataForm.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       Background: Background,
       codeUrl: '',
@@ -61,64 +64,29 @@ export default {
       loginForm: {
         username: '',
         password: '',
-        rememberMe: false,
-        code: '',
+        repassword: '',
         uuid: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', message: '用户名不能为空' }],
         password: [{ required: true, trigger: 'blur', message: '密码不能为空' }],
-        code: [{ required: true, trigger: 'change', message: '验证码不能为空' }]
+        repassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
       },
       loading: false,
       redirect: undefined
     }
   },
   watch: {
-    $route: {
-      handler: function(route) {
-        const data = route.query
-        if (data && data.redirect) {
-          this.redirect = data.redirect
-          delete data.redirect
-          if (JSON.stringify(data) !== '{}') {
-            this.redirect = this.redirect + '&' + qs.stringify(data, { indices: false })
-          }
-        }
-      },
-      immediate: true
-    }
   },
   created() {
-    // 获取验证码
-    this.getCode()
-    // 获取用户名密码等Cookie
-    this.getCookie()
-    // token 过期提示
-    this.point()
   },
   methods: {
-    getCode() {
-      getCodeImg().then(res => {
-        this.codeUrl = res.img
-        this.loginForm.uuid = res.uuid
+    handleLogin() {
+      this.$router.push({
+        path: '/login'
       })
     },
-    getCookie() {
-      const username = Cookies.get('username')
-      let password = Cookies.get('password')
-      const rememberMe = Cookies.get('rememberMe')
-      // 保存cookie里面的加密后的密码
-      this.cookiePass = password === undefined ? '' : password
-      password = password === undefined ? this.loginForm.password : password
-      this.loginForm = {
-        username: username === undefined ? this.loginForm.username : username,
-        password: password,
-        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
-        code: ''
-      }
-    },
-    handleLogin() {
+    handleRegister() {
       this.$refs.loginForm.validate(valid => {
         const user = {
           username: this.loginForm.username,
@@ -154,23 +122,6 @@ export default {
         }
       })
     },
-    handleRegister() {
-      this.$router.push({
-        path: '/register'
-      })
-    },
-    point() {
-      const point = Cookies.get('point') !== undefined
-      if (point) {
-        this.$notify({
-          title: '提示',
-          message: '当前登录状态已过期，请重新登录！',
-          type: 'warning',
-          duration: 5000
-        })
-        Cookies.remove('point')
-      }
-    }
   }
 }
 </script>

@@ -76,7 +76,7 @@ export default {
   cruds() {
     return CRUD({ title: 'laboraty', url: 'api/laboratory', idField: 'id', sort: 'id,lDesc', crudMethod: { ...crudLaboratory }})
   },
-  dicts: ['lab_status'],
+  dicts: ['lab_status'], // 自定义过滤器
   data() {
     return {
       permission: {

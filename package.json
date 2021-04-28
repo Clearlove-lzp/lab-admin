@@ -1,7 +1,7 @@
 {
   "name": "eladmin-web",
   "version": "2.6.0",
-  "description": "在线实验管理系统",
+  "description": "实验教学管理系统",
   "author": "Zheng Jie",
   "license": "Apache-2.0",
   "scripts": {

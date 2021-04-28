@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      title: '在线实验管理系统',
+      title: '实验教学管理系统',
       logo: Logo
     }
   }

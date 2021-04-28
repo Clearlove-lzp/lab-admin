@@ -12,6 +12,8 @@
             <p>得分：{{reportInfo.taskGrade}}</p>
             <p>评语：</p>
             <p>{{reportInfo.teacherDesc}}</p>
+            <p>及格人数：{{dataInfo.t}}</p>
+            <p>不及格人数：{{dataInfo.p}}</p>
           </div>
         </el-col>
         <el-col :span="16">
@@ -25,11 +27,14 @@
 
 <script>
 import { getReport } from '@/api/report'
+import { taskStatistics } from '@/api/experimentTasks'
+
 export default {
   props: {},
   data () {
     return {
-      reportInfo: {}
+      reportInfo: {},
+      dataInfo: {}
     };
   },
   components: {},
@@ -43,9 +48,18 @@ export default {
       getReport(params).then(res => {
         if(res.content && res.content.length) {
           this.reportInfo = res.content[0]
+          this.getStatic()
         }else{
           this.reportInfo = {}
         }
+      })
+    },
+    getStatic() {
+      let params = {
+        taskId: this.reportInfo.taskId
+      }
+      taskStatistics(params).then(res => {
+        this.dataInfo = res
       })
     }
   },

@@ -2,7 +2,7 @@ module.exports = {
   /**
    * @description 网站标题
    */
-  title: '在线实验管理系统',
+  title: '实验教学管理系统',
   /**
    * @description 是否显示 tagsView
    */
